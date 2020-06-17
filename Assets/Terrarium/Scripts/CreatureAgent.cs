@@ -184,7 +184,7 @@ public abstract class CreatureAgent : Agent
         // vectorAction[2] = Action
         // Where Action can be {Eat, Reproduce, Attack, Deffend}
         MoveAgent(vectorAction);
-        switch((int)vectorAction[2])
+        switch((int)vectorAction[1])
         {
             case 1:
                 Eat();
@@ -215,16 +215,38 @@ public abstract class CreatureAgent : Agent
         //transform.Rotate(rotateDir * Time.fixedDeltaTime * 90f);
         // move forward
         // if using physics perform different
-        if(!agentRB.isKinematic)
+        if (!agentRB.isKinematic)
         {
-            if (act[1] == 0f)
-                agentRB.velocity = new Vector3(0, 0, 0);
-            else if (act[1] == 1f)
-            //agentRB.AddForce(transform.forward * MaxSpeed, ForceMode.VelocityChange);
-            agentRB.velocity = transform.TransformDirection(new Vector3(0, 0, MaxSpeed));
-            //transform.Translate(0,0, MaxSpeed * Time.deltaTime, Space.Self);
-            //transform.Translate(Vector3.forward * Time.deltaTime * MaxSpeed);
-        } 
+            var dirToGo = Vector3.zero;
+            //var rotateDir = Vector3.zero;
+
+            var action = Mathf.FloorToInt(act[1]);
+
+            switch (action)
+            {
+                case 1:
+                    dirToGo = transform.forward * 1f;
+                    break;
+                case 2:
+                    dirToGo = transform.forward * -1f;
+                    break;
+                case 3:
+                    rotateDir = transform.up * 1f;
+                    break;
+                case 4:
+                    rotateDir = transform.up * -1f;
+                    break;
+                case 5:
+                    dirToGo = transform.right * -0.75f;
+                    break;
+                case 6:
+                    dirToGo = transform.right * 0.75f;
+                    break;
+            }
+            transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+            agentRB.AddForce(dirToGo * MaxSpeed,
+                ForceMode.VelocityChange);
+        }
         else {
             transform.Translate(Vector3.forward * Time.deltaTime * MaxSpeed);
         }
